@@ -63,14 +63,24 @@ class OmniauthMicrosoftIdentity2Test < Minitest::Test
   def test_uid_info_credentials_and_extra_are_derived_from_raw_info
     strategy = build_strategy
     raw_info = {
+      'aud' => 'client-id',
+      'iss' => 'https://login.microsoftonline.com/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/v2.0',
+      'iat' => 1_772_692_424,
+      'nbf' => 1_772_692_424,
+      'exp' => 1_772_696_324,
       'tid' => 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
       'oid' => '11111111-2222-3333-4444-555555555555',
       'sub' => 'subject-value',
+      'sid' => 'session-id-value',
+      'uti' => 'token-uti-value',
+      'ver' => '2.0',
+      'idp' => 'https://sts.windows.net/tenant-id/',
       'name' => 'Sample User',
       'given_name' => 'Sample',
       'family_name' => 'User',
       'preferred_username' => 'sample@example.test',
-      'email' => 'sample@example.test'
+      'email' => 'sample@example.test',
+      'picture' => 'https://graph.microsoft.com/v1.0/me/photo/$value'
     }
 
     token = FakeAccessToken.new(raw_info)
@@ -83,7 +93,8 @@ class OmniauthMicrosoftIdentity2Test < Minitest::Test
         email: 'sample@example.test',
         first_name: 'Sample',
         last_name: 'User',
-        nickname: 'sample@example.test'
+        nickname: 'sample@example.test',
+        image: 'https://graph.microsoft.com/v1.0/me/photo/$value'
       },
       strategy.info
     )

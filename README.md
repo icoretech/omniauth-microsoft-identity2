@@ -76,35 +76,53 @@ Example payload from `request.env['omniauth.auth']` (realistic shape, anonymized
     "email": "sample@example.test",
     "first_name": "Sample",
     "last_name": "User",
-    "nickname": "sample@example.test"
+    "nickname": "sample@example.test",
+    "image": "https://graph.microsoft.com/v1.0/me/photo/$value"
   },
   "credentials": {
     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOi...",
-    "refresh_token": "0.AXwA...",
-    "expires_at": 1772691847,
+    "refresh_token": "1.Aa4A...<redacted>",
+    "expires_at": 1772697856,
     "expires": true,
-    "scope": "openid profile email offline_access User.Read"
+    "scope": "email openid profile User.Read"
   },
   "extra": {
     "raw_info": {
+      "aud": "client-id",
+      "iss": "https://login.microsoftonline.com/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/v2.0",
+      "iat": 1772692424,
+      "nbf": 1772692424,
+      "exp": 1772696324,
+      "sid": "session-id-value",
+      "uti": "token-uti-value",
+      "ver": "2.0",
+      "idp": "https://sts.windows.net/tenant-id/",
       "tid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
       "oid": "11111111-2222-3333-4444-555555555555",
-      "sub": "aaaaaaaaaaaaaaaaaaaa",
+      "sub": "subject-value",
       "name": "Sample User",
       "given_name": "Sample",
       "family_name": "User",
       "preferred_username": "sample@example.test",
-      "email": "sample@example.test"
+      "email": "sample@example.test",
+      "picture": "https://graph.microsoft.com/v1.0/me/photo/$value"
     },
     "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6I...redacted...",
     "id_info": {
+      "aud": "client-id",
+      "iss": "https://login.microsoftonline.com/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/v2.0",
+      "iat": 1772692424,
+      "nbf": 1772692424,
+      "exp": 1772696324,
+      "sid": "session-id-value",
+      "uti": "token-uti-value",
+      "ver": "2.0",
+      "idp": "https://sts.windows.net/tenant-id/",
       "tid": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
       "oid": "11111111-2222-3333-4444-555555555555",
-      "sub": "aaaaaaaaaaaaaaaaaaaa",
+      "sub": "subject-value",
       "name": "Sample User",
-      "preferred_username": "sample@example.test",
-      "iat": 1772689518,
-      "exp": 1772693118
+      "preferred_username": "sample@example.test"
     }
   }
 }
