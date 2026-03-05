@@ -38,9 +38,11 @@ provider :microsoft_identity, ENV.fetch('MICROSOFT_CLIENT_ID'), ENV.fetch('MICRO
 provider :windowslive, ENV.fetch('MICROSOFT_CLIENT_ID'), ENV.fetch('MICROSOFT_CLIENT_SECRET')
 ```
 
-Microsoft app setup:
+## Provider App Setup
+
 - [Microsoft identity platform OAuth 2.0 authorization code flow](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-auth-code-flow)
 - [OpenID Connect on the Microsoft identity platform](https://learn.microsoft.com/en-us/entra/identity-platform/v2-protocols-oidc)
+- Register callback URL (example): `https://your-app.example.com/auth/windowslive/callback`
 
 ## Options
 
@@ -149,6 +151,12 @@ Run Rails integration tests with an explicit Rails version:
 RAILS_VERSION='~> 8.1.0' bundle install
 RAILS_VERSION='~> 8.1.0' bundle exec rake test_rails_integration
 ```
+
+## Test Structure
+
+- `test/omniauth_microsoft_identity2_test.rb`: strategy/unit behavior
+- `test/rails_integration_test.rb`: full Rack/Rails request+callback flow
+- `test/test_helper.rb`: shared test bootstrap
 
 ## Compatibility
 
