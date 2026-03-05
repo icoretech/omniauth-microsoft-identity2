@@ -33,5 +33,5 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'cgi', '>= 0.3.6'
   spec.add_dependency 'jwt', '>= 2.9.2'
-  spec.add_dependency 'omniauth-oauth2', '>= 1.8', '< 1.9'
+  spec.add_dependency 'omniauth-oauth2', '>= 1.8', '< 2.0'
 end
