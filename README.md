@@ -58,6 +58,12 @@ Supported options include:
 
 Request query parameters for supported authorize options are passed through in request phase.
 
+## Troubleshooting
+
+- If callback fails with `message=csrf_detected`, the OAuth `state` value could not be validated.
+- A common local smoke-test cause is host mismatch between request and callback (for example `127.0.0.1` vs `localhost`), which changes cookie scope and drops the session state cookie.
+- Use the exact same host for request and callback URLs, and register that exact callback in Entra.
+
 ## Auth Hash
 
 Example payload from `request.env['omniauth.auth']` (realistic shape, anonymized):

@@ -99,6 +99,16 @@ module OmniAuth
         end
       end
 
+      def callback_phase
+        return fail_state_mismatch if missing_session_state?
+
+        super
+      rescue NoMethodError => e
+        raise unless oauth_state_nil_compare_error?(e)
+
+        fail_state_mismatch
+      end
+
       # Ensure token exchange uses a stable callback URI that matches provider config.
       def callback_url
         options[:callback_url] || options[:redirect_uri] || super
@@ -198,6 +208,21 @@ module OmniAuth
 
       def present?(value)
         !blank?(value)
+      end
+
+      def missing_session_state?
+        present?(request.params['state']) && blank?(session['omniauth.state'])
+      end
+
+      def oauth_state_nil_compare_error?(error)
+        error.message.include?("undefined method 'bytesize' for nil")
+      end
+
+      def fail_state_mismatch
+        fail!(
+          :csrf_detected,
+          OmniAuth::Strategies::OAuth2::CallbackError.new(:csrf_detected, 'OAuth state was missing or mismatched')
+        )
       end
     end
 

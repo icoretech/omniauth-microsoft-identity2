@@ -104,6 +104,13 @@ class RailsIntegrationTest < Minitest::Test
     assert_requested :get, 'https://graph.microsoft.com/oidc/userinfo', times: 1
   end
 
+  def test_rails_callback_without_state_cookie_returns_csrf_detected
+    get '/auth/microsoft_identity2/callback', { code: 'oauth-test-code', state: 'abc123' }
+
+    assert_equal 401, last_response.status
+    assert_equal({ 'error' => 'csrf_detected' }, JSON.parse(last_response.body))
+  end
+
   private
 
   def stub_microsoft_token_exchange

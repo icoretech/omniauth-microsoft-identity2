@@ -145,6 +145,19 @@ class OmniauthMicrosoftIdentity2Test < Minitest::Test
     assert_equal '', strategy.query_string
   end
 
+  def test_missing_state_cookie_fails_with_csrf_detected
+    app = ->(_env) { [404, { 'Content-Type' => 'text/plain' }, ['not found']] }
+    strategy = OmniAuth::Strategies::MicrosoftIdentity2.new(app, 'client-id', 'client-secret')
+    env = Rack::MockRequest.env_for('/auth/microsoft_identity2/callback?code=abc&state=xyz')
+    env['rack.session'] = {}
+
+    status, headers, = strategy.call(env)
+
+    assert_equal 302, status
+    assert_includes headers.fetch('Location'), '/auth/failure'
+    assert_includes headers.fetch('Location'), 'message=csrf_detected'
+  end
+
   def test_request_phase_redirects_to_microsoft_with_expected_params
     previous_request_validation_phase = OmniAuth.config.request_validation_phase
     OmniAuth.config.request_validation_phase = nil
