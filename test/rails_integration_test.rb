@@ -107,8 +107,13 @@ class RailsIntegrationTest < Minitest::Test
   def test_rails_callback_without_state_cookie_returns_csrf_detected
     get '/auth/microsoft_identity2/callback', { code: 'oauth-test-code', state: 'abc123' }
 
-    assert_equal 401, last_response.status
-    assert_equal({ 'error' => 'csrf_detected' }, JSON.parse(last_response.body))
+    assert_equal 302, last_response.status
+
+    failure_uri = URI.parse(last_response['Location'])
+    failure_params = URI.decode_www_form(failure_uri.query.to_s).to_h
+
+    assert_equal '/auth/failure', failure_uri.path
+    assert_equal 'csrf_detected', failure_params['message']
   end
 
   private
