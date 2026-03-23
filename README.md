@@ -1,4 +1,4 @@
-# OmniAuth MicrosoftIdentity2 Strategy
+# OmniAuth Microsoft Identity Strategy
 
 [![Test](https://github.com/icoretech/omniauth-microsoft-identity2/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/icoretech/omniauth-microsoft-identity2/actions/workflows/test.yml?query=branch%3Amain)
 [![Gem Version](https://badge.fury.io/rb/omniauth-microsoft-identity2.svg)](https://badge.fury.io/rb/omniauth-microsoft-identity2)
@@ -47,6 +47,7 @@ provider :windowslive, ENV.fetch('MICROSOFT_CLIENT_ID'), ENV.fetch('MICROSOFT_CL
 ## Options
 
 Supported options include:
+
 - `tenant` (default: `common`)
 - `scope` (default: `openid profile email offline_access User.Read`)
 - `prompt`
@@ -133,6 +134,7 @@ Example payload from `request.env['omniauth.auth']` (realistic shape, anonymized
 ## Endpoints
 
 This gem uses Microsoft Identity v2 endpoints and Microsoft Graph user info endpoints:
+
 - `https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize`
 - `https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token`
 - `https://graph.microsoft.com/oidc/userinfo`
