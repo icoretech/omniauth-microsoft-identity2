@@ -1,51 +1,51 @@
 # frozen_string_literal: true
 
-require_relative 'test_helper'
+require_relative "test_helper"
 
-require 'action_controller/railtie'
-require 'cgi'
-require 'json'
-require 'logger'
-require 'rack/test'
-require 'rails'
-require 'uri'
-require 'webmock/minitest'
+require "action_controller/railtie"
+require "cgi"
+require "json"
+require "logger"
+require "rack/test"
+require "rails"
+require "uri"
+require "webmock/minitest"
 
 class RailsIntegrationSessionsController < ActionController::Base
   def create
-    auth = request.env.fetch('omniauth.auth')
+    auth = request.env.fetch("omniauth.auth")
     render json: {
-      uid: auth['uid'],
-      email: auth.dig('info', 'email')
+      uid: auth["uid"],
+      email: auth.dig("info", "email")
     }
   end
 
   def failure
-    render json: { error: params[:message] }, status: :unauthorized
+    render json: {error: params[:message]}, status: :unauthorized
   end
 end
 
 class RailsIntegrationApp < Rails::Application
-  config.root = File.expand_path('..', __dir__)
+  config.root = File.expand_path("..", __dir__)
   config.eager_load = false
-  config.secret_key_base = 'microsoft-identity2-rails-integration-test-secret-key'
+  config.secret_key_base = "microsoft-identity2-rails-integration-test-secret-key"
   config.active_support.cache_format_version = 7.1 if config.active_support.respond_to?(:cache_format_version=)
 
   if config.active_support.respond_to?(:to_time_preserves_timezone=) &&
-     Rails.gem_version < Gem::Version.new('8.1.0')
+      Rails.gem_version < Gem::Version.new("8.1.0")
     config.active_support.to_time_preserves_timezone = :zone
   end
   config.hosts.clear
-  config.hosts << 'example.org'
+  config.hosts << "example.org"
   config.logger = Logger.new(nil)
 
   config.middleware.use OmniAuth::Builder do
-    provider :microsoft_identity2, 'client-id', 'client-secret'
+    provider :microsoft_identity2, "client-id", "client-secret"
   end
 
   routes.append do
-    match '/auth/:provider/callback', to: 'rails_integration_sessions#create', via: %i[get post]
-    get '/auth/failure', to: 'rails_integration_sessions#failure'
+    match "/auth/:provider/callback", to: "rails_integration_sessions#create", via: %i[get post]
+    get "/auth/failure", to: "rails_integration_sessions#failure"
   end
 end
 
@@ -81,67 +81,67 @@ class RailsIntegrationTest < Minitest::Test
     stub_microsoft_token_exchange
     stub_microsoft_userinfo
 
-    post '/auth/microsoft_identity2'
+    post "/auth/microsoft_identity2"
 
     assert_equal 302, last_response.status
 
-    authorize_uri = URI.parse(last_response['Location'])
+    authorize_uri = URI.parse(last_response["Location"])
 
-    assert_equal 'login.microsoftonline.com', authorize_uri.host
-    assert_equal '/common/oauth2/v2.0/authorize', authorize_uri.path
-    state = URI.decode_www_form(authorize_uri.query).to_h.fetch('state')
+    assert_equal "login.microsoftonline.com", authorize_uri.host
+    assert_equal "/common/oauth2/v2.0/authorize", authorize_uri.path
+    state = URI.decode_www_form(authorize_uri.query).to_h.fetch("state")
 
-    get '/auth/microsoft_identity2/callback', { code: 'oauth-test-code', state: state }
+    get "/auth/microsoft_identity2/callback", {code: "oauth-test-code", state: state}
 
     assert_equal 200, last_response.status
 
     payload = JSON.parse(last_response.body)
 
-    assert_equal 'subject-value', payload['uid']
-    assert_equal 'sample@example.test', payload['email']
+    assert_equal "subject-value", payload["uid"]
+    assert_equal "sample@example.test", payload["email"]
 
-    assert_requested :post, 'https://login.microsoftonline.com/common/oauth2/v2.0/token', times: 1
-    assert_requested :get, 'https://graph.microsoft.com/oidc/userinfo', times: 1
+    assert_requested :post, "https://login.microsoftonline.com/common/oauth2/v2.0/token", times: 1
+    assert_requested :get, "https://graph.microsoft.com/oidc/userinfo", times: 1
   end
 
   def test_rails_callback_without_state_cookie_returns_csrf_detected
-    get '/auth/microsoft_identity2/callback', { code: 'oauth-test-code', state: 'abc123' }
+    get "/auth/microsoft_identity2/callback", {code: "oauth-test-code", state: "abc123"}
 
     assert_equal 302, last_response.status
 
-    failure_uri = URI.parse(last_response['Location'])
+    failure_uri = URI.parse(last_response["Location"])
     failure_params = URI.decode_www_form(failure_uri.query.to_s).to_h
 
-    assert_equal '/auth/failure', failure_uri.path
-    assert_equal 'csrf_detected', failure_params['message']
+    assert_equal "/auth/failure", failure_uri.path
+    assert_equal "csrf_detected", failure_params["message"]
   end
 
   private
 
   def stub_microsoft_token_exchange
-    stub_request(:post, 'https://login.microsoftonline.com/common/oauth2/v2.0/token').to_return(
+    stub_request(:post, "https://login.microsoftonline.com/common/oauth2/v2.0/token").to_return(
       status: 200,
-      headers: { 'Content-Type' => 'application/json' },
+      headers: {"Content-Type" => "application/json"},
       body: {
-        access_token: 'access-token',
-        refresh_token: 'refresh-token',
-        token_type: 'Bearer',
+        access_token: "access-token",
+        refresh_token: "refresh-token",
+        token_type: "Bearer",
         expires_in: 3600,
-        scope: 'openid profile email offline_access User.Read'
+        scope: "openid profile email offline_access User.Read"
       }.to_json
     )
   end
 
   def stub_microsoft_userinfo
-    stub_request(:get, 'https://graph.microsoft.com/oidc/userinfo').to_return(
+    stub_request(:get, "https://graph.microsoft.com/oidc/userinfo").to_return(
       status: 200,
-      headers: { 'Content-Type' => 'application/json' },
+      headers: {"Content-Type" => "application/json"},
       body: {
-        sub: 'subject-value',
-        name: 'Sample User',
-        given_name: 'Sample',
-        family_name: 'User',
-        email: 'sample@example.test'
+        sub: "subject-value",
+        name: "Sample User",
+        given_name: "Sample",
+        family_name: "User",
+        email: "sample@example.test"
       }.to_json
     )
   end
